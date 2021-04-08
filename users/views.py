@@ -43,12 +43,12 @@ class UserViewSet(viewsets.ModelViewSet):
         # Firebase user
         # https://firebase.google.com/docs/auth/admin/manage-users#python_4
         user = auth.create_user(
-            email=request.data['email'],
-            email_verified=True,
-            password=request.data['password'],
-            display_name=request.data['username'],
-            photo_url='http://www.example.com/12345678/photo.png',
-            disabled=False
+            email = request.data['email'],
+            email_verified = True,
+            password = request.data['password'],
+            display_name = request.data['username'],
+            photo_url = 'http://www.example.com/12345678/photo.png',
+            disabled = False
         )
 
         return Response({
