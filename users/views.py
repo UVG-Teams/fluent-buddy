@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from users.serializers import UserSerializer
 from permissions.services import APIPermissionClassFactory
 
+import hmac
+import hashlib
 from firebase_admin import auth
 
 
@@ -33,23 +35,45 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, url_path='create_user', methods=['POST'])
     def newUser (self, request):
+
+        if request.data['type'] == 'normal':
+            email = request.data['email']
+            display_name = request.data['username']
+            photo = None
+            password = request.data['password']
+        else:
+            email = request.data['user']['email']
+            display_name = request.data['user']['name']
+            photo = request.data['user']['picture']['data']['url']
+            password = hmac.new(
+                msg = bytes(request.data['user']['id'], 'utf-8'),
+                key = bytes(request.data['user']['id'], 'utf-8'),
+                digestmod = hashlib.sha256
+            ).hexdigest()
+
+        print("email: ", email)
+        print("password: ", password)
+        print("display_name: ", display_name)
+        print("photo: ", photo)
+
         usuario = User(
-            username = request.data['username'],
-            email = request.data['email'],
+            username = email,
+            email = email,
         )
-        usuario.set_password(request.data['password'])
+
+        usuario.set_password(password)
         usuario.save()
 
         # Firebase user
         # https://firebase.google.com/docs/auth/admin/manage-users#python_4
-        user = auth.create_user(
-            email = request.data['email'],
-            email_verified = True,
-            password = request.data['password'],
-            display_name = request.data['username'],
-            photo_url = 'http://www.example.com/12345678/photo.png',
-            disabled = False
-        )
+        # firebase_user = auth.create_user(
+        #     email = email,
+        #     email_verified = True,
+        #     password = password,
+        #     display_name = display_name,
+        #     photo_url = photo,
+        #     disabled = False
+        # )
 
         return Response({
             'status':'Ok'
