@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
-import credentials
 import datetime
+import credentials
+import firebase_admin
+from pathlib import Path
+from firebase_admin import credentials as firebase_credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -161,3 +163,11 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# https://firebase.google.com/docs/admin/setup#linux-or-macos
+FIREBASE_APP = firebase_admin.initialize_app(
+    firebase_credentials.Certificate(
+        credentials.FIREBASE_ADMIN_SDK_KEY
+    )
+)
