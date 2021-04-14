@@ -1,16 +1,16 @@
+import hmac
+import hashlib
+from firebase_admin import auth
 from django.shortcuts import render
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.contrib.auth import authenticate
 from rest_framework_jwt.settings import api_settings
 
 from users.serializers import UserSerializer
 from permissions.services import APIPermissionClassFactory
-
-import hmac
-import hashlib
-from firebase_admin import auth
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -35,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
 
     @action(detail=False, url_path='create_user', methods=['POST'])
-    def newUser (self, request):
+    def newUser(self, request):
 
         if request.data['type'] == 'normal':
             email = request.data['email']
@@ -76,3 +76,31 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({
             'token': token
         })
+
+    @action(detail=False, url_path='token-auth-third-party', methods=['POST'])
+    def login_third_party(self, request):
+
+        email = request.data['user']['email']
+
+        password = hmac.new(
+            msg = bytes(request.data['user']['id'], 'utf-8'),
+            key = bytes(request.data['user']['id'], 'utf-8'),
+            digestmod = hashlib.sha256
+        ).hexdigest()
+
+        user = authenticate(
+            request,
+            username = email,
+            password = password
+        )
+
+        if not user:
+            return Response({ "error": 'Invalid credentials' })
+
+        if not user.is_active:
+            return Response({ "error": 'User not active' })
+
+        payload = api_settings.JWT_PAYLOAD_HANDLER(user)
+        token = api_settings.JWT_ENCODE_HANDLER(payload)
+
+        return Response({ "token": token })
