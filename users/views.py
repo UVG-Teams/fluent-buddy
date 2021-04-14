@@ -95,10 +95,10 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
         if not user:
-            raise exceptions.AuthenticationFailed('Invalid credentials')
+            return Response({ "error": 'Invalid credentials' })
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed('Not active')
+            return Response({ "error": 'User not active' })
 
         payload = api_settings.JWT_PAYLOAD_HANDLER(user)
         token = api_settings.JWT_ENCODE_HANDLER(payload)
