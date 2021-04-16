@@ -14,8 +14,9 @@ def sendMail(data):
         [recepient],
         fail_silently = False,
         html_message = render_to_string(
-        'emails/signup/index.html',
-        {
-            'message': message
-        }
-    ))
+            'emails/signup/index.html',
+            {
+                'message': message
+            }
+        )
+    )
