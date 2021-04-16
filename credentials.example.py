@@ -22,6 +22,7 @@ FIREBASE_ADMIN_SDK_KEY = {
 }
 
 EMAIL_HOST = {
+    'HOST': 'smtp.gmail.com',
     'EMAIL': 'fluentbuddyinfo@gmail.com',
     'PASSWORD': ''
 }
