@@ -9,34 +9,10 @@ from rest_framework.decorators import action
 from django.contrib.auth import authenticate
 from rest_framework_jwt.settings import api_settings
 
-from users.serializers import UserSerializer
-from permissions.services import APIPermissionClassFactory
 from users.services import sendMail
+from users.serializers import UserSerializer
 from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-def index(request):
-    message = 'El correo fue enviado con éxito'
-    messageError = 'El correo <strong>no</strong> fue enviado con éxito'
-    try:
-        sendMail(request)
-        return render(
-        request,
-        'signup/response.html',
-            {
-                'message': message,
-                'direccion': request.POST['email']
-            }
-        )
-    except:
-        return render(
-        request,
-        'signup/resopnseError.html',
-            {
-                'message': message,
-                'direccion': request.POST['email']
-            }
-        )
+from permissions.services import APIPermissionClassFactory
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -99,7 +75,9 @@ class UserViewSet(viewsets.ModelViewSet):
         payload = api_settings.JWT_PAYLOAD_HANDLER(user)
         token = api_settings.JWT_ENCODE_HANDLER(payload)
 
-        sendMail(request)
+        sendMail({
+            'email': email
+        })
 
         return Response({
             'token': token

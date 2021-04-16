@@ -20,3 +20,8 @@ FIREBASE_ADMIN_SDK_KEY = {
     "auth_provider_x509_cert_url": "",
     "client_x509_cert_url": ""
 }
+
+EMAIL_HOST = {
+    'EMAIL': 'fluentbuddyinfo@gmail.com',
+    'PASSWORD': ''
+}
