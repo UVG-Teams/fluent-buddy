@@ -23,13 +23,14 @@ from rest_framework_jwt.views import (
     verify_jwt_token,
 )
 
-from users.views import UserViewSet
+from users.views import UserViewSet, index
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
 urlpatterns = [
     url('admin/', admin.site.urls),
+    url('api/send_mail/', index),
     url(r'^api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
     url(r'^api/', include(router.urls)),
     url(r'^api/token-auth/', obtain_jwt_token),
