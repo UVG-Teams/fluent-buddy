@@ -24,9 +24,11 @@ from rest_framework_jwt.views import (
 )
 
 from users.views import UserViewSet
+from chatrooms.views import ChatroomViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'chatrooms', ChatroomViewSet)
 
 urlpatterns = [
     url('admin/', admin.site.urls),
