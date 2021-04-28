@@ -23,10 +23,13 @@ from rest_framework_jwt.views import (
     verify_jwt_token,
 )
 
-from users.views import UserViewSet
+from users.views import UserViewSet, TemaViewSet
+from support.views import ContactViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'tema',TemaViewSet)
+router.register(r'contact', ContactViewSet)
 
 urlpatterns = [
     url('admin/', admin.site.urls),

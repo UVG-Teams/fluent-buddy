@@ -4,13 +4,14 @@ from firebase_admin import auth
 from django.shortcuts import render
 from rest_framework import viewsets
 from django.contrib.auth.models import User
+from users.models import Tema
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth import authenticate
 from rest_framework_jwt.settings import api_settings
 
 from users.services import sendMail
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, TemaSerializer
 from django.views.decorators.csrf import csrf_exempt
 from permissions.services import APIPermissionClassFactory
 
@@ -72,6 +73,9 @@ class UserViewSet(viewsets.ModelViewSet):
         user.set_password(password)
         user.save()
 
+        tema = Tema(user=user, tema='Verdes')
+        tema.save()
+        print(tema)
         payload = api_settings.JWT_PAYLOAD_HANDLER(user)
         token = api_settings.JWT_ENCODE_HANDLER(payload)
 
@@ -110,3 +114,27 @@ class UserViewSet(viewsets.ModelViewSet):
         token = api_settings.JWT_ENCODE_HANDLER(payload)
 
         return Response({ "token": token })
+
+class TemaViewSet(viewsets.ModelViewSet):
+    queryset = Tema.objects.all()
+    serializer_class = TemaSerializer
+
+    @action(detail=False, url_path='set_tema', methods=['PATCH'])
+    def setTema (self, request):
+        usuario = User.objects.get(id=request.data['user'])
+        tema = Tema.objects.get(user=usuario)
+        tema.tema = request.data['tema']
+        tema.save()
+
+        return Response({
+            'status':'ok'
+        })
+
+    @action(detail=False, url_path='get_tema', methods=['POST'])
+    def getTema (self, request):
+        usuario = User.objects.get(id=request.data['user'])
+        tema = Tema.objects.get(user=usuario)
+
+        return Response({
+            'theme': tema.tema
+        })
