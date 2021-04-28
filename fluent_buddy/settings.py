@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     'permissions.apps.PermissionsConfig',
     'users.apps.UsersConfig',
+    'support.apps.SupportConfig',
 ]
 
 MIDDLEWARE = [
