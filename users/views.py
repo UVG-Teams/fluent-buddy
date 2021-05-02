@@ -79,9 +79,15 @@ class UserViewSet(viewsets.ModelViewSet):
             'email': email
         })
 
-        return Response({
-            'token': token
-        })
+        response = {
+            'token': token,
+            'firebase_uid': None
+        }
+
+        if request.data['type'] == 'normal':
+            response['firebase_uid'] = firebase_user.uid
+
+        return Response(response)
 
     @action(detail=False, url_path='token-auth-third-party', methods=['POST'])
     def login_third_party(self, request):
@@ -101,12 +107,12 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
         if not user:
-            return Response({ "error": 'Invalid credentials' })
+            return Response({ 'error': 'Invalid credentials' })
 
         if not user.is_active:
-            return Response({ "error": 'User not active' })
+            return Response({ 'error': 'User not active' })
 
         payload = api_settings.JWT_PAYLOAD_HANDLER(user)
         token = api_settings.JWT_ENCODE_HANDLER(payload)
 
-        return Response({ "token": token })
+        return Response({ 'token': token })
