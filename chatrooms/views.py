@@ -23,6 +23,7 @@ class ChatroomViewSet(viewsets.ModelViewSet):
                 'sent_at': '',
                 'text': '',
             },
+            'language': request.data['language'],
             'members_uids': [bot_uid, current_user.uid],
             'members': {
                 bot_uid: {
